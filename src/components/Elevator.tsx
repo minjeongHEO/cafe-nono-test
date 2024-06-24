@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { Flex } from '../styles/themes';
 
-export default function Elevator() {
+export default function Elevator({ id }: { id: number }) {
   return (
     <ElevatorPath>
       <ElevatorCar />
