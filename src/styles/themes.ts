@@ -16,4 +16,5 @@ export const FlexColumn = styled(Flex)`
 
 export const Color = {
   DefaultColor: '#ccc',
+  OperationColor: 'red',
 };

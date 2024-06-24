@@ -1,16 +1,26 @@
 import { Color, FlexRow } from '../styles/themes';
 import styled from 'styled-components';
 
-const { DefaultColor } = Color;
+const { DefaultColor, OperationColor } = Color;
 
-export default function FloorButton() {
+interface FloorButtonProps {
+  handleButtonClick: (arg: number) => void;
+  requestedFloor: number[];
+}
+
+export default function FloorButton({ handleButtonClick, requestedFloor }: FloorButtonProps) {
   return (
     <FlexRow>
       <div>호출</div>
       <GridButton>
         {Array.from({ length: 15 }, (_, i) => (
-          <GridItem key={`item-${i}`}>
-            <span>{i + 1}</span>
+          <GridItem
+            key={`item-${i}`}
+            onClick={() => {
+              handleButtonClick(i + 1);
+            }}
+          >
+            <span className={requestedFloor.includes(i + 1) ? 'requestedFloor' : ''}>{i + 1}</span>
           </GridItem>
         ))}
       </GridButton>
@@ -34,5 +44,9 @@ const GridItem = styled.div`
 
   &:last-child {
     border-right: none;
+  }
+
+  & .requestedFloor {
+    color: ${OperationColor};
   }
 `;
