@@ -5,22 +5,26 @@ const { DefaultColor, OperationColor } = Color;
 
 interface FloorButtonProps {
   handleButtonClick: (arg: number) => void;
-  requestedFloor: number[];
+  requestedFloors: number[];
+  isClickable: boolean;
+}
+interface GridItemProps {
+  $isClickable: boolean;
 }
 
-export default function FloorButton({ handleButtonClick, requestedFloor }: FloorButtonProps) {
+export default function FloorButton({ handleButtonClick, requestedFloors, isClickable }: FloorButtonProps) {
   return (
     <FlexRow>
       <div>호출</div>
-      <GridButton>
+      <GridButton $isClickable={isClickable}>
         {Array.from({ length: 15 }, (_, i) => (
           <GridItem
             key={`item-${i}`}
             onClick={() => {
-              handleButtonClick(i + 1);
+              isClickable && handleButtonClick(i + 1);
             }}
           >
-            <span className={requestedFloor.includes(i + 1) ? 'requestedFloor' : ''}>{i + 1}</span>
+            <span className={requestedFloors.includes(i + 1) ? 'requestedFloors' : ''}>{i + 1}</span>
           </GridItem>
         ))}
       </GridButton>
@@ -28,15 +32,17 @@ export default function FloorButton({ handleButtonClick, requestedFloor }: Floor
   );
 }
 
-const GridButton = styled.div`
+const GridButton = styled.div<GridItemProps>`
+  cursor: ${({ $isClickable }) => ($isClickable ? 'pointer' : 'not-allowed')};
   margin-left: 15px;
   display: grid;
   grid-template-columns: repeat(15, auto);
   border: 1px solid ${DefaultColor};
+
+  background-color: ${({ $isClickable }) => ($isClickable ? 'none' : DefaultColor)};
 `;
 
 const GridItem = styled.div`
-  cursor: pointer;
   border-right: 1px solid ${DefaultColor};
   width: 35px;
   padding: 5px;
@@ -46,7 +52,7 @@ const GridItem = styled.div`
     border-right: none;
   }
 
-  & .requestedFloor {
+  & .requestedFloors {
     color: ${OperationColor};
   }
 `;

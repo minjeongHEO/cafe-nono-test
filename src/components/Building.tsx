@@ -9,23 +9,30 @@ interface ElevatorState {
   destinationFloor: number;
   presentFloor: number;
 }
-interface OperationPerElevator {
+export interface OperationPerElevator {
   [key: number]: ElevatorState;
 }
 
 const initOperationPerElevator: OperationPerElevator = {
-  0: { isWork: false, destinationFloor: 0, presentFloor: 0 },
-  1: { isWork: false, destinationFloor: 0, presentFloor: 0 },
-  2: { isWork: false, destinationFloor: 0, presentFloor: 0 },
+  0: { isWork: false, destinationFloor: 1, presentFloor: 1 },
+  1: { isWork: false, destinationFloor: 1, presentFloor: 1 },
+  2: { isWork: false, destinationFloor: 1, presentFloor: 1 },
 };
 
 export default function Building() {
-  const [requestedFloor, setRequestedFloor] = useState<number[]>([]);
+  const [requestedFloors, setRequestedFloor] = useState<number[]>([]);
   const [operationPerElevator, setOperationPerElevator] = useState<OperationPerElevator>(initOperationPerElevator);
 
+  const removeRequestedFloor = (floor: number) => {
+    if (requestedFloors.length === 0) return;
+    if (requestedFloors.includes(floor)) {
+      setRequestedFloor((prev) => prev.filter((e) => e !== floor));
+    }
+  };
+
   const handleButtonClick = (floor: number) => {
-    if (requestedFloor.length === 3) return;
-    if (!requestedFloor.includes(floor)) {
+    if (requestedFloors.length === 3) return;
+    if (!requestedFloors.includes(floor)) {
       setRequestedFloor((prev) => [...prev, floor]);
     }
   };
@@ -36,9 +43,6 @@ export default function Building() {
     const distances = Object.entries(operationPerElevator).map(([key, elevator]) => {
       if (elevator.isWork) return Infinity;
       return Math.abs(calledFloor - elevator.presentFloor);
-      // return (
-      //   Math.abs(elevator.presentFloor - elevator.destinationFloor) + Math.abs(calledFloor - elevator.destinationFloor)
-      // );
     });
 
     const minDistance = Math.min(...distances);
@@ -51,22 +55,32 @@ export default function Building() {
   };
 
   useEffect(() => {
-    if (requestedFloor.length <= 0) return;
+    if (requestedFloors.length <= 0) return;
 
-    const calledFloor = requestedFloor[requestedFloor.length - 1];
+    const calledFloor = requestedFloors[requestedFloors.length - 1];
     const elevatorNumber = callElevator(calledFloor);
 
     changeOperationPerElevator(elevatorNumber, calledFloor);
-  }, [requestedFloor]);
+  }, [requestedFloors]);
 
   return (
     <BuildingWrapper>
       <FlexColumn>
-        <FloorButton handleButtonClick={handleButtonClick} requestedFloor={requestedFloor} />
+        <FloorButton
+          handleButtonClick={handleButtonClick}
+          requestedFloors={requestedFloors}
+          isClickable={requestedFloors.length < 3}
+        />
         <ElevatorWrapper>
-          <Elevator id={0} />
-          <Elevator id={1} />
-          <Elevator id={2} />
+          {Array.from({ length: 3 }).map((_, idx) => (
+            <Elevator
+              key={`elevator-${idx}`}
+              elevateId={idx}
+              {...{ operationPerElevator }}
+              {...{ setOperationPerElevator }}
+              {...{ removeRequestedFloor }}
+            />
+          ))}
         </ElevatorWrapper>
       </FlexColumn>
     </BuildingWrapper>
