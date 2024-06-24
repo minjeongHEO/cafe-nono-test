@@ -1,7 +1,8 @@
 import React from 'react';
+import Building from './components/Building';
 
 function App() {
-  return <div>default</div>;
+  return <Building />;
 }
 
 export default App;
