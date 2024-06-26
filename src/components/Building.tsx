@@ -31,10 +31,19 @@ export default function Building() {
   };
 
   const handleButtonClick = (floor: number) => {
+    const newRequestedFloor = [...requestedFloors, floor];
+
     if (requestedFloors.length === 3) return;
     if (!requestedFloors.includes(floor)) {
       setRequestedFloor((prev) => [...prev, floor]);
     }
+
+    if (newRequestedFloor.length <= 0) return;
+
+    const calledFloor = newRequestedFloor[newRequestedFloor.length - 1]; // [6, 8, 9] => 6이 도착해 => [8, 9] => calledFloor = 9
+    const elevatorNumber = callElevator(calledFloor);
+
+    changeOperationPerElevator(elevatorNumber, calledFloor);
   };
 
   const callElevator = (calledFloor: number): number => {
@@ -53,15 +62,6 @@ export default function Building() {
     const newElevator = { ...operationPerElevator[elevatorNumber], isWork: true, destinationFloor: calledFloor };
     setOperationPerElevator((prev) => ({ ...prev, [elevatorNumber]: newElevator }));
   };
-
-  useEffect(() => {
-    if (requestedFloors.length <= 0) return;
-
-    const calledFloor = requestedFloors[requestedFloors.length - 1];
-    const elevatorNumber = callElevator(calledFloor);
-
-    changeOperationPerElevator(elevatorNumber, calledFloor);
-  }, [requestedFloors]);
 
   return (
     <BuildingWrapper>
